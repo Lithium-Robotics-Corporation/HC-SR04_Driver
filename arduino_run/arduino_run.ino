@@ -29,19 +29,35 @@ float getDistance() {
 //Number of values to average from the sensor
 unsigned int iterations = 10;
 //In microseconds
-unsigned int iteration_delay = 2;
+unsigned int iteration_delay = 1;
 
 void loop() {
   //Burst fire sensor to get multiple values for distance over a short interval. This will help smooth the values received because the sensor response can jump around a bit.
-  float average = 0.0;
-  for(int i=0;i<iterations;i++) {
-    average+=getDistance();
+  float* points = (float*)malloc(sizeof(float)*iterations);
+  unsigned long t1 = micros();
+  for(unsigned int i=0;i<iterations;i++) {
+    points[i]=getDistance();
     delayMicroseconds(iteration_delay);
   }
-  average/=iterations;
+
+  float dx=0.0, dxdt=0.0, dt=(float)iteration_delay;
+  unsigned long t2=micros();
+  for(unsigned int i=0;i<iterations;i++) {
+    dx+=points[i];
+    if(i>0) dxdt+=(points[i]-points[i-1])/(float)(t2-t1);
+  }
+  //Free memory immediately in order to prevent memory fragmentation.
+  free(points);
   
-  Serial.print("Distance: ");
-  Serial.print(average);
+  dx/=iterations;
+  dxdt/=iterations-1;
+  
+  Serial.print("dx: ");
+  Serial.print(dx);
   Serial.println("cm");
+  Serial.print("dx/dt: ");
+  Serial.print(dxdt*1000000);
+  Serial.println("cm/s");
+  Serial.println("---------");
   delay(500);
 }
