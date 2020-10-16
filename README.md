@@ -7,4 +7,4 @@ This code is preliminary code for the IP-0000-RD-LR01 environmental sensor writt
 ### What is does
 The HC-SR04 is a low cost, popular ultrasonic short-range distance sensor. It has an effective range of 2cm to 400cm with an accuracy of 3mm.
 
-### Code status: In progress
+### Code status: Complete
